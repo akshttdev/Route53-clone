@@ -103,7 +103,8 @@ API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 ```bash
 cd frontend
 npm install
-# Optional: create .env.local with NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+# Optional: create .env.local with NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api/v1
+# (defaults to that if unset; do not point this at a dead Render URL locally)
 npm run dev
 ```
 
@@ -234,18 +235,21 @@ Free PaaS backends (Render free) **sleep after ~15 minutes** of no traffic. Grad
 
 ### Recommended stack (all free)
 
-1. **Frontend → Vercel** (does not sleep)
-2. **Backend → Render** Web Service (Docker) — see `RENDER_SETTINGS.md` (repo-root `Dockerfile` works if Root Directory is empty)
+1. **Frontend → Vercel** (does not sleep) — do **not** deploy the frontend on Render
+2. **Backend → Render** Web Service (**Python 3**, Root Directory `backend`) — see `RENDER_SETTINGS.md`
 3. **Keep awake → UptimeRobot** (or cron-job.org) ping every 5 minutes
 
 ### 1) Deploy backend on Render
 
 1. Push this repo to GitHub (already done once you push `main`).
 2. Go to [https://render.com](https://render.com) → **New → Web Service** → connect `Route53-clone`.
-3. Settings:
+3. Settings (copy exactly — **Root Directory must be `backend`** or `pip` cannot find `requirements.txt`):
+   - **Runtime:** Python 3
    - **Root Directory:** `backend`
-   - **Runtime:** Docker — either leave Root Directory empty (uses repo-root `Dockerfile`) or set Root Directory to `backend`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
    - **Instance:** Free
+   - Python is pinned to 3.12.8 via `backend/runtime.txt` (avoids Render’s default 3.14)
 4. Environment variables:
 
 ```text
@@ -269,11 +273,13 @@ ALLOWED_HOSTS=*
 
 1. Go to [https://vercel.com](https://vercel.com) → **Add New Project** → import this repo.
 2. **Root Directory:** `frontend`
-3. Environment variable:
+3. Environment variable (required for production login — without it, Vercel cannot reach Render and login shows `fetch failed`):
 
 ```text
 NEXT_PUBLIC_API_URL=https://YOUR-BACKEND.onrender.com/api/v1
 ```
+
+   Set this under **Project → Settings → Environment Variables** for Production (and Preview if needed), then **redeploy**. Use your real Render URL (must include `/api/v1`, no trailing slash).
 
 4. Deploy. Copy the URL, e.g. `https://route53-clone.vercel.app`.
 5. Go back to Render and update `BACKEND_CORS_ORIGINS` to that Vercel URL, then redeploy backend once.
