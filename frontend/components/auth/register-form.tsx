@@ -1,25 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { auth } from "@/lib/auth";
+
+function formatDetail(detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d) =>
+        typeof d === "object" && d && "msg" in d
+          ? String((d as { msg: unknown }).msg)
+          : String(d)
+      )
+      .join(", ");
+  }
+  if (detail && typeof detail === "object" && "message" in detail) {
+    return String((detail as { message: unknown }).message);
+  }
+  return "Registration failed. Please try again.";
+}
+
+function extractError(data: unknown): string {
+  if (!data || typeof data !== "object") {
+    return "Registration failed. Please try again.";
+  }
+  const obj = data as Record<string, unknown>;
+  if (obj.detail !== undefined) return formatDetail(obj.detail);
+  if (obj.error !== undefined) return formatDetail(obj.error);
+  return "Registration failed. Please try again.";
+}
 
 export function RegisterForm() {
-  const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -33,141 +54,111 @@ export function RegisterForm() {
     try {
       const registerResponse = await fetch("/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
       const registerData = await registerResponse.json();
 
       if (!registerResponse.ok) {
-        const detail = registerData.detail
-        const message = Array.isArray(detail)
-          ? detail.map((d: { msg?: string }) => d.msg ?? JSON.stringify(d)).join(", ")
-          : typeof detail === "string"
-            ? detail
-            : "Registration failed. Please try again."
-        setError(message)
-        return
+        setError(extractError(registerData));
+        setLoading(false);
+        return;
       }
 
-      // Auto-login after successful registration
       const loginResponse = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ email, password }),
       });
 
       const loginData = await loginResponse.json();
 
       if (!loginResponse.ok) {
-        // Registration succeeded but login failed - redirect to login
-        router.replace("/login");
+        window.location.href = "/login";
         return;
       }
 
-      localStorage.setItem(
-        "access_token",
-        loginData.access_token
-      );
-      localStorage.setItem("user_email", email);
+      if (!loginData.access_token) {
+        setError("No access token returned after registration.");
+        setLoading(false);
+        return;
+      }
 
-      router.replace("/hosted-zones");
-      router.refresh();
+      auth.setToken(loginData.access_token);
+      localStorage.setItem("user_email", email);
+      window.location.href = "/hosted-zones";
     } catch {
-      setError(
-        "Unable to connect to the server."
-      );
-    } finally {
+      setError("Unable to connect to the server.");
       setLoading(false);
     }
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-5"
-    >
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Email
-        </label>
-
-        <Input
+    <form onSubmit={handleSubmit} className="aws-signin-form" noValidate>
+      <div className="aws-signin-field">
+        <label htmlFor="reg-email">Email</label>
+        <input
+          id="reg-email"
           type="email"
-          placeholder="you@example.com"
           autoComplete="email"
           value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
+          onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Password
-        </label>
-
-        <Input
-          type="password"
-          placeholder="••••••••"
+      <div className="aws-signin-field">
+        <label htmlFor="reg-password">Password</label>
+        <input
+          id="reg-password"
+          type={showPassword ? "text" : "password"}
           autoComplete="new-password"
           value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
+          onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Confirm Password
-        </label>
-
-        <Input
-          type="password"
-          placeholder="••••••••"
+      <div className="aws-signin-field">
+        <label htmlFor="reg-confirm">Confirm password</label>
+        <input
+          id="reg-confirm"
+          type={showPassword ? "text" : "password"}
           autoComplete="new-password"
           value={confirmPassword}
-          onChange={(e) =>
-            setConfirmPassword(e.target.value)
-          }
+          onChange={(e) => setConfirmPassword(e.target.value)}
           required
+          disabled={loading}
         />
       </div>
 
+      <label className="aws-signin-check">
+        <input
+          type="checkbox"
+          checked={showPassword}
+          onChange={(e) => setShowPassword(e.target.checked)}
+          disabled={loading}
+        />
+        <span>Show password</span>
+      </label>
+
       {error && (
-        <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-600">
+        <div className="aws-signin-error" role="alert">
           {error}
         </div>
       )}
 
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={loading}
-      >
-        {loading ? "Creating account..." : "Create Account"}
-      </Button>
+      <button type="submit" className="aws-signin-primary" disabled={loading}>
+        {loading ? "Creating account…" : "Create account"}
+      </button>
 
-      <div className="text-center text-sm">
-        <span className="text-[#5F6B7A]">Already have an account? </span>
-        <Link href="/login" className="text-[#0972D3] hover:underline">
-          Sign in
-        </Link>
-      </div>
+      <p className="aws-signin-create">
+        Already have an account? <Link href="/login">Sign in</Link>
+      </p>
     </form>
   );
 }

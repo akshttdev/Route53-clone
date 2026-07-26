@@ -10,6 +10,18 @@ async def rate_limit_exceeded_handler(
     exc: RateLimitExceeded,
 ):
     request_id = getattr(request.state, "request_id", None)
+    path = request.url.path
+
+    if path.rstrip("/").endswith("/auth/login"):
+        message = (
+            "Too many login attempts. Please wait a minute and try again."
+        )
+    elif path.rstrip("/").endswith("/auth/register"):
+        message = (
+            "Too many registration attempts. Please wait a minute and try again."
+        )
+    else:
+        message = "Too many requests. Please try again later."
 
     return JSONResponse(
         status_code=429,
@@ -17,10 +29,12 @@ async def rate_limit_exceeded_handler(
             "success": False,
             "error": {
                 "code": "RATE_LIMIT_EXCEEDED",
-                "message": "Too many requests. Please try again later.",
+                "message": message,
             },
+            "detail": message,
             "request_id": request_id,
         },
+        headers={"Retry-After": "60"},
     )
 
 

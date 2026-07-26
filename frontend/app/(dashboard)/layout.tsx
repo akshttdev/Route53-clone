@@ -126,7 +126,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const [darkMode, setDarkMode] = useState(true);
   const [userEmail, setUserEmail] = useState("demo@example.com");
 
@@ -157,14 +156,8 @@ export default function DashboardLayout({
   };
 
   const handleSignOut = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      /* ignore */
-    }
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("user_email");
-    router.replace("/login");
+    const { auth } = await import("@/lib/auth");
+    await auth.logout();
   };
 
   return (

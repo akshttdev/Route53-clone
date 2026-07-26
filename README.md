@@ -235,7 +235,7 @@ Free PaaS backends (Render free) **sleep after ~15 minutes** of no traffic. Grad
 ### Recommended stack (all free)
 
 1. **Frontend → Vercel** (does not sleep)
-2. **Backend → Render** Web Service (Docker)
+2. **Backend → Render** Web Service (Docker) — see `RENDER_SETTINGS.md` (repo-root `Dockerfile` works if Root Directory is empty)
 3. **Keep awake → UptimeRobot** (or cron-job.org) ping every 5 minutes
 
 ### 1) Deploy backend on Render
@@ -244,7 +244,7 @@ Free PaaS backends (Render free) **sleep after ~15 minutes** of no traffic. Grad
 2. Go to [https://render.com](https://render.com) → **New → Web Service** → connect `Route53-clone`.
 3. Settings:
    - **Root Directory:** `backend`
-   - **Runtime:** Docker (uses `backend/Dockerfile`)
+   - **Runtime:** Docker — either leave Root Directory empty (uses repo-root `Dockerfile`) or set Root Directory to `backend`
    - **Instance:** Free
 4. Environment variables:
 

@@ -1,25 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { auth } from "@/lib/auth";
+import { loginThrottle } from "@/lib/login-throttle";
+import { safeInternalPath } from "@/lib/safe-redirect";
+
+function formatDetail(detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d) =>
+        typeof d === "object" && d && "msg" in d
+          ? String((d as { msg: unknown }).msg)
+          : String(d)
+      )
+      .join(", ");
+  }
+  return "Invalid email or password.";
+}
 
 export function LoginForm() {
-  const router = useRouter();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [accountId, setAccountId] = useState("route53-clone");
+  const [rememberAccount, setRememberAccount] = useState(true);
+  const [email, setEmail] = useState("demo@example.com");
+  const [password, setPassword] = useState("password123");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cooldown, setCooldown] = useState(0);
 
-  async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+  useEffect(() => {
+    setCooldown(loginThrottle.getCooldownSeconds());
+  }, []);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = window.setInterval(() => {
+      const remaining = loginThrottle.getCooldownSeconds();
+      setCooldown(remaining);
+      if (remaining <= 0) window.clearInterval(id);
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [cooldown]);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    e.stopPropagation();
+
+    const remaining = loginThrottle.getCooldownSeconds();
+    if (remaining > 0) {
+      setCooldown(remaining);
+      setError(
+        `Too many failed attempts. Please wait ${remaining}s before trying again.`
+      );
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -27,101 +64,181 @@ export function LoginForm() {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(
-          data.detail ??
-            "Invalid email or password."
-        );
+      let data: { detail?: unknown; access_token?: string } = {};
+      try {
+        data = await response.json();
+      } catch {
+        setError("Unexpected response from server.");
+        setLoading(false);
         return;
       }
 
-      localStorage.setItem(
-        "access_token",
-        data.access_token
-      );
-      localStorage.setItem("user_email", email);
+      if (!response.ok) {
+        if (response.status === 429) {
+          setError(formatDetail(data.detail));
+          setLoading(false);
+          return;
+        }
 
-      router.replace("/hosted-zones");
-      router.refresh();
+        const result = loginThrottle.recordFailure();
+        if (result.locked) {
+          setCooldown(result.cooldownSeconds);
+          setError(
+            `Too many failed attempts. Please wait ${result.cooldownSeconds}s before trying again.`
+          );
+        } else {
+          setError(formatDetail(data.detail));
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (!data.access_token) {
+        setError("No access token returned.");
+        setLoading(false);
+        return;
+      }
+
+      loginThrottle.recordSuccess();
+      auth.setToken(data.access_token);
+      localStorage.setItem("user_email", email);
+      if (rememberAccount) {
+        localStorage.setItem("aws_account_alias", accountId);
+      }
+
+      const nextParam = new URLSearchParams(window.location.search).get("next");
+      const next = safeInternalPath(nextParam);
+      // Hard navigation so the dashboard layout remounts and reads the token
+      window.location.href = next;
     } catch {
-      setError(
-        "Unable to connect to the server."
-      );
-    } finally {
+      setError("Unable to connect to the server. Is the Next.js app running?");
       setLoading(false);
     }
   }
 
+  const locked = cooldown > 0;
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-5"
+      className="aws-signin-form"
+      method="post"
+      action="#"
+      noValidate
     >
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Email
+      <div className="aws-signin-field">
+        <label htmlFor="account-id">
+          Account ID (12 digits) or account alias{" "}
+          <a href="#help" className="aws-signin-inline-link" onClick={(e) => e.preventDefault()}>
+            (Don&apos;t have?)
+          </a>
         </label>
-
-        <Input
-          type="email"
-          placeholder="you@example.com"
-          autoComplete="email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          required
+        <input
+          id="account-id"
+          name="account"
+          type="text"
+          autoComplete="organization"
+          value={accountId}
+          onChange={(e) => setAccountId(e.target.value)}
+          disabled={locked || loading}
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Password
-        </label>
+      <label className="aws-signin-check">
+        <input
+          type="checkbox"
+          checked={rememberAccount}
+          onChange={(e) => setRememberAccount(e.target.checked)}
+          disabled={locked || loading}
+        />
+        <span>Remember this account</span>
+      </label>
 
-        <Input
-          type="password"
-          placeholder="••••••••"
+      <div className="aws-signin-field">
+        <label htmlFor="iam-user">IAM user name</label>
+        <input
+          id="iam-user"
+          name="email"
+          type="email"
+          autoComplete="username"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={locked || loading}
+        />
+      </div>
+
+      <div className="aws-signin-field">
+        <div className="aws-signin-label-row">
+          <label htmlFor="password">Password</label>
+          <a href="#help" className="aws-signin-inline-link" onClick={(e) => e.preventDefault()}>
+            Having trouble?
+          </a>
+        </div>
+        <input
+          id="password"
+          name="password"
+          type={showPassword ? "text" : "password"}
           autoComplete="current-password"
           value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
+          onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={locked || loading}
         />
       </div>
 
+      <label className="aws-signin-check">
+        <input
+          type="checkbox"
+          checked={showPassword}
+          onChange={(e) => setShowPassword(e.target.checked)}
+          disabled={locked || loading}
+        />
+        <span>Show password</span>
+      </label>
+
       {error && (
-        <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-600">
+        <div className="aws-signin-error" role="alert">
           {error}
         </div>
       )}
 
-      <Button
+      <button
         type="submit"
-        className="w-full"
-        disabled={loading}
+        className="aws-signin-primary"
+        disabled={loading || locked}
       >
-        {loading ? "Signing in..." : "Sign In"}
-      </Button>
+        {locked
+          ? `Try again in ${cooldown}s`
+          : loading
+            ? "Signing in…"
+            : "Sign in"}
+      </button>
 
-      <div className="text-center text-sm">
-        <span className="text-[#5F6B7A]">New to Route 53? </span>
-        <Link href="/register" className="text-[#0972D3] hover:underline">
-          Create an account
-        </Link>
-      </div>
+      <button
+        type="button"
+        className="aws-signin-secondary"
+        disabled={locked || loading}
+        onClick={() => {
+          setEmail("demo@example.com");
+          setPassword("password123");
+        }}
+      >
+        Sign in using root user email
+      </button>
+
+      <p className="aws-signin-demo">
+        Demo: <code>demo@example.com</code> / <code>password123</code>
+      </p>
+
+      <p className="aws-signin-create">
+        <Link href="/register">Create a new AWS account</Link>
+      </p>
     </form>
   );
 }

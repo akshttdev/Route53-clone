@@ -36,7 +36,7 @@ def me(
     "/register",
     response_model=UserResponse,
 )
-@limiter.limit("3/minute")
+@limiter.limit("5/minute")
 def register(
     request: Request,
     user_data: UserRegister,
@@ -50,7 +50,7 @@ def register(
     "/login",
     response_model=TokenResponse,
 )
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 def login(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),

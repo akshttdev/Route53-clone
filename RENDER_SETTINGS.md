@@ -1,6 +1,14 @@
 # Render Web Service — copy these exactly
 
-## Service settings
+## Option A (recommended if Root Directory is empty)
+If Render looks for `Dockerfile` at the **repo root** (error: `open Dockerfile: no such file`), use:
+- **Root Directory:** *(leave empty)*
+- **Dockerfile Path:** `./Dockerfile`
+- **Docker Build Context:** `.`
+
+A root `Dockerfile` is in the repo and copies `backend/`.
+
+## Option B (Root Directory = backend)
 - **Name:** route53-clone-api (any name)
 - **Language / Runtime:** Docker
 - **Root Directory:** `backend`
@@ -34,4 +42,4 @@
 - **Root Directory:** `frontend`
 - **Framework:** Next.js
 - **Env:** `NEXT_PUBLIC_API_URL` = `https://YOUR-SERVICE.onrender.com/api/v1`
-- **Redeploy** after pushing the middleware fix
+- **Redeploy** after pushing login / middleware fixes

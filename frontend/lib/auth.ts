@@ -1,4 +1,5 @@
 const TOKEN_KEY = "access_token"
+const EMAIL_KEY = "user_email"
 
 export const auth = {
   getToken() {
@@ -19,12 +20,18 @@ export const auth = {
     return !!this.getToken()
   },
 
-  async logout() {
+  clearLocalSession() {
     this.removeToken()
+    localStorage.removeItem(EMAIL_KEY)
+  },
+
+  async logout() {
+    this.clearLocalSession()
 
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
+        credentials: "same-origin",
       })
     } catch (error) {
       console.error("Logout API error:", error)

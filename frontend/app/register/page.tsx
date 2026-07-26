@@ -1,64 +1,47 @@
 "use client";
 
 import { RegisterForm } from "@/components/auth/register-form";
+import { AwsSignInLogo } from "@/components/auth/aws-logo";
+import { GuestRoute } from "@/components/auth/guest-route";
 
 export default function RegisterPage() {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        fontFamily: '"Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif',
-        background: "#EAEDED",
-      }}
-    >
-      <header style={{ background: "#232F3E", padding: "16px 24px" }}>
-        <div style={{ fontSize: 22, fontWeight: 700, color: "#fff" }}>
-          <span style={{ color: "#FF9900" }}>amazon</span>
-          <span style={{ marginLeft: 6 }}>route 53</span>
+    <GuestRoute>
+    <div className="aws-signin-page">
+      <header className="aws-signin-topbar">
+        <div className="aws-signin-topbar__links">
+          <button type="button">Provide feedback</button>
+          <span className="aws-signin-sep" />
+          <button type="button">English ▾</button>
         </div>
       </header>
 
-      <main
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 16,
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            maxWidth: 420,
-            background: "#fff",
-            border: "1px solid #D5DBDB",
-            borderRadius: 8,
-            padding: 32,
-            boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 24,
-              fontWeight: 600,
-              color: "#16191F",
-            }}
-          >
-            Create account
-          </h1>
-          <p style={{ margin: "8px 0 0", fontSize: 14, color: "#5F6B7A" }}>
-            Sign up to access the Route 53 console
-          </p>
+      <main className="aws-signin-main">
+        <div className="aws-signin-shell">
+          <div className="aws-signin-brand">
+            <AwsSignInLogo className="aws-signin-logo" />
+          </div>
 
-          <div style={{ marginTop: 24 }}>
-            <RegisterForm />
+          <div className="aws-signin-layout aws-signin-layout--single">
+            <div className="aws-signin-column">
+              <section className="aws-signin-card" aria-labelledby="register-title">
+                <h1 id="register-title" className="aws-signin-title">
+                  Create AWS account
+                </h1>
+                <p className="aws-signin-subtitle">Sign up for this Route 53 console clone.</p>
+                <RegisterForm />
+              </section>
+
+              <footer className="aws-signin-legal">
+                <p>
+                  © 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.
+                </p>
+              </footer>
+            </div>
           </div>
         </div>
       </main>
     </div>
+    </GuestRoute>
   );
 }

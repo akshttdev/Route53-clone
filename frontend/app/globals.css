@@ -353,3 +353,445 @@ body {
   color: #fff;
   text-decoration: underline;
 }
+
+
+/* ===== AWS IAM sign-in (system theme) ===== */
+.aws-signin-page {
+  --signin-bg: #f0f2f5;
+  --signin-card-bg: #ffffff;
+  --signin-text: #16191f;
+  --signin-muted: #545b64;
+  --signin-border: #aab7b8;
+  --signin-input-border: #879596;
+  --signin-link: #0073bb;
+  --signin-error-bg: #fdf2f2;
+  --signin-error-border: #d13212;
+  --signin-error-text: #d13212;
+  --signin-topbar: transparent;
+  --signin-footer: #545b64;
+  --signin-promo-bg: #0b1b2b;
+  --signin-primary: #ff9900;
+  --signin-primary-hover: #ec7211;
+  --signin-primary-text: #ffffff;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+  color: var(--signin-text);
+  /* Solid AWS-style gray — no repeating pattern over legal links */
+  background: var(--signin-bg);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  .aws-signin-page {
+    --signin-bg: #0f141a;
+    --signin-card-bg: #161d26;
+    --signin-text: #f2f3f3;
+    --signin-muted: #aab7b8;
+    --signin-border: #414d5c;
+    --signin-input-border: #687078;
+    --signin-link: #44b9d6;
+    --signin-error-bg: #2a1215;
+    --signin-error-border: #ff7a59;
+    --signin-error-text: #ff7a59;
+    --signin-footer: #aab7b8;
+    --signin-promo-bg: #050b12;
+    color-scheme: dark;
+  }
+
+  .aws-signin-secondary {
+    border-color: #44b9d6;
+    color: #44b9d6;
+  }
+}
+
+.aws-signin-topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 24px;
+  background: var(--signin-topbar);
+}
+
+.aws-signin-topbar__links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.aws-signin-topbar__links button {
+  border: 0;
+  background: transparent;
+  color: var(--signin-link);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.aws-signin-topbar__links button:hover {
+  text-decoration: underline;
+}
+
+.aws-signin-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--signin-border);
+}
+
+.aws-signin-main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px 16px 48px;
+}
+
+.aws-signin-shell {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.aws-signin-brand {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 28px;
+}
+
+.aws-signin-logo {
+  display: block;
+  width: 80px;
+  height: 48px;
+}
+
+.aws-signin-layout {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(280px, 400px) minmax(240px, 380px);
+  gap: 28px;
+  align-items: start;
+  justify-content: center;
+}
+
+.aws-signin-layout--single {
+  grid-template-columns: minmax(280px, 400px);
+  justify-content: center;
+}
+
+.aws-signin-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.aws-signin-card {
+  background: var(--signin-card-bg);
+  border: 1px solid var(--signin-border);
+  border-radius: 4px;
+  padding: 28px 28px 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.aws-signin-title {
+  margin: 0 0 20px;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--signin-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aws-signin-subtitle {
+  margin: -8px 0 20px;
+  font-size: 14px;
+  color: var(--signin-muted);
+}
+
+.aws-signin-info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--signin-link);
+  color: var(--signin-link);
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+}
+
+.aws-signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.aws-signin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aws-signin-field label,
+.aws-signin-label-row label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--signin-text);
+}
+
+.aws-signin-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.aws-signin-field input {
+  height: 34px;
+  padding: 4px 8px;
+  border: 1px solid var(--signin-input-border);
+  border-radius: 2px;
+  background: var(--signin-card-bg);
+  color: var(--signin-text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.aws-signin-field input:focus {
+  border-color: #0073bb;
+  box-shadow: 0 0 0 1px #0073bb;
+}
+
+.aws-signin-inline-link {
+  color: var(--signin-link);
+  font-size: 12px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.aws-signin-inline-link:hover {
+  text-decoration: underline;
+}
+
+.aws-signin-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--signin-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.aws-signin-check input {
+  width: 14px;
+  height: 14px;
+  accent-color: #0073bb;
+}
+
+.aws-signin-error {
+  border: 1px solid var(--signin-error-border);
+  background: var(--signin-error-bg);
+  color: var(--signin-error-text);
+  border-radius: 2px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.aws-signin-primary {
+  height: 36px;
+  border: 1px solid #e47911;
+  border-radius: 2px;
+  background: var(--signin-primary);
+  color: var(--signin-primary-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.aws-signin-primary:hover:not(:disabled) {
+  background: var(--signin-primary-hover);
+  border-color: #eb5f07;
+}
+
+.aws-signin-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.aws-signin-secondary {
+  height: 36px;
+  border: 1px solid #0073bb;
+  border-radius: 2px;
+  background: transparent;
+  color: #0073bb;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.aws-signin-secondary:hover {
+  background: rgba(0, 115, 187, 0.06);
+}
+
+.aws-signin-demo {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--signin-muted);
+}
+
+.aws-signin-demo code {
+  font-size: 12px;
+  background: rgba(127, 127, 127, 0.12);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.aws-signin-create {
+  margin: 8px 0 0;
+  font-size: 13px;
+  text-align: center;
+}
+
+.aws-signin-create a {
+  color: var(--signin-link);
+  text-decoration: none;
+}
+
+.aws-signin-create a:hover {
+  text-decoration: underline;
+}
+
+.aws-signin-promo {
+  min-height: 340px;
+  border-radius: 4px;
+  background:
+    radial-gradient(ellipse at 70% 40%, rgba(255, 153, 0, 0.25), transparent 55%),
+    linear-gradient(160deg, #0d2137 0%, var(--signin-promo-bg) 100%);
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.aws-signin-promo__inner {
+  padding: 28px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.aws-signin-promo h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.aws-signin-promo p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #d5dbdb;
+  max-width: 34ch;
+}
+
+.aws-signin-promo__cta {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.aws-signin-promo__cta:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.aws-signin-promo__art {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  opacity: 0.95;
+}
+
+.aws-signin-legal,
+.aws-signin-footer {
+  padding: 8px 4px 12px;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--signin-footer);
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.aws-signin-legal p,
+.aws-signin-footer p {
+  margin: 4px 0;
+}
+
+.aws-signin-legal a,
+.aws-signin-footer a {
+  color: var(--signin-link);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.aws-signin-legal a:hover,
+.aws-signin-footer a:hover {
+  text-decoration: underline;
+}
+
+.aws-signin-footer {
+  text-align: center;
+  padding: 16px 24px 28px;
+}
+
+@media (max-width: 800px) {
+  .aws-signin-layout {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+
+  .aws-signin-promo {
+    min-height: 200px;
+  }
+
+  .aws-signin-promo__art {
+    display: none;
+  }
+
+  .aws-signin-topbar {
+    padding: 10px 12px;
+  }
+
+  .aws-signin-card {
+    padding: 22px 18px 18px;
+  }
+
+  .aws-signin-legal {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .aws-signin-topbar__links button:nth-child(1),
+  .aws-signin-topbar__links .aws-signin-sep:first-of-type {
+    display: none;
+  }
+}

@@ -10,23 +10,20 @@ interface Props {
 }
 
 /**
- * Client-only gate. Must wait until after mount so localStorage is readable —
- * SSR / first paint always looks unauthenticated.
+ * Guest-only gate for /login and /register.
+ * Wait until after mount so localStorage is readable — same pattern as ProtectedRoute.
  */
-export function ProtectedRoute({ children }: Props) {
+export function GuestRoute({ children }: Props) {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    const ok = auth.isAuthenticated();
-    setAllowed(ok);
+    const loggedIn = auth.isAuthenticated();
+    setAllowed(!loggedIn);
     setReady(true);
-    if (!ok) {
-      const next = encodeURIComponent(
-        window.location.pathname + window.location.search
-      );
-      router.replace(`/login?next=${next}`);
+    if (loggedIn) {
+      router.replace("/hosted-zones");
     }
   }, [router]);
 
