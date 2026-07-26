@@ -1,0 +1,355 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Amazon Ember";
+  src: url("/fonts/AmazonEmber.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif !important;
+}
+
+/* Route 53 orange primary actions (Cloudscape) */
+[class*="awsui_button"][class*="awsui_variant-primary"] {
+  background-color: #ff9900 !important;
+  border-color: #ff9900 !important;
+  color: #16191f !important;
+}
+
+[class*="awsui_button"][class*="awsui_variant-primary"]:hover {
+  background-color: #ec7211 !important;
+  border-color: #ec7211 !important;
+  color: #16191f !important;
+}
+
+#h {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.console-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-background-layout-main, #0f141a);
+}
+
+.console-shell > div:last-child {
+  flex: 1;
+  min-height: 0;
+}
+
+/* AWS Management Console top header */
+.aws-console-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 73px;
+  padding: 10px 17px;
+  background: #232f3e;
+  color: #d5dbdb;
+  border-bottom: 1px solid #161d26;
+  font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+  font-size: 13px;
+}
+
+.aws-console-header__left,
+.aws-console-header__right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.aws-console-header__left {
+  flex: 1;
+}
+
+.aws-logo {
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px 10px 6px 2px;
+}
+
+.aws-logo__img {
+  display: block;
+  width: 26px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.aws-header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: #d5dbdb;
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+}
+
+.aws-header-btn:hover,
+.aws-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.aws-header-btn--text {
+  max-width: 180px;
+}
+
+.aws-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: #d5dbdb;
+  cursor: pointer;
+}
+
+.aws-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 560px;
+  min-width: 180px;
+  height: 32px;
+  margin-left: 8px;
+  background: #161d26;
+  border: 1px solid #545b64;
+  border-radius: 2px;
+}
+
+.aws-search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 560px;
+  min-width: 180px;
+  margin-left: 8px;
+}
+
+.aws-search-wrap .aws-search {
+  margin-left: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.aws-search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1300;
+  max-height: 420px;
+  overflow: auto;
+  background: #232f3e;
+  border: 1px solid #545b64;
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.aws-search-results__group,
+.aws-search-results__meta {
+  padding: 8px 12px;
+  color: #879596;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aws-search-results__meta {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+.aws-search-results__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #d5dbdb;
+  text-align: left;
+  padding: 10px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.aws-search-results__item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.aws-search-results__title {
+  font-size: 13px;
+}
+
+.aws-search-results__sub {
+  font-size: 11px;
+  color: #879596;
+}
+
+.aws-search:focus-within {
+  border-color: #0972d3;
+  box-shadow: 0 0 0 1px #0972d3;
+}
+
+.aws-search__icon {
+  margin-left: 8px;
+  color: #879596;
+  flex-shrink: 0;
+}
+
+.aws-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  padding: 0 8px;
+}
+
+.aws-search input::placeholder {
+  color: #879596;
+}
+
+.aws-search__hint {
+  margin-right: 8px;
+  padding: 1px 4px;
+  border: 1px solid #545b64;
+  border-radius: 2px;
+  color: #879596;
+  font-size: 11px;
+  font-family: inherit;
+  background: transparent;
+}
+
+.aws-header-dropdown {
+  position: relative;
+}
+
+.aws-header-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1200;
+  min-width: 200px;
+  padding: 4px 0;
+  background: #232f3e;
+  border: 1px solid #545b64;
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.aws-header-menu--right {
+  left: auto;
+  right: 0;
+}
+
+.aws-header-menu button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #d5dbdb;
+  text-align: left;
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.aws-header-menu button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.aws-header-menu__meta {
+  padding: 8px 12px;
+  color: #879596;
+  font-size: 12px;
+  border-bottom: 1px solid #3f4b5b;
+  margin-bottom: 4px;
+  word-break: break-all;
+}
+
+@media (max-width: 900px) {
+  .aws-search__hint {
+    display: none;
+  }
+
+  .aws-header-btn span {
+    display: none;
+  }
+}
+
+.aws-console-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding: 8px 16px;
+  background: #232f3e;
+  color: #d5dbdb;
+  border-top: 1px solid #161d26;
+  font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.aws-console-footer__left,
+.aws-console-footer__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.aws-console-footer__btn {
+  border: 0;
+  background: transparent;
+  color: #d5dbdb;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.aws-console-footer__btn:hover {
+  color: #fff;
+  text-decoration: underline;
+}

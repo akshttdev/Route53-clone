@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+
+.venv/
+
+.env
+
+route53.db
+
+.alembic
+
+.pytest_cache/
+
+.vscode/
+
+*.py[cod]

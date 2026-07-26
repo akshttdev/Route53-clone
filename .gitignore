@@ -1,0 +1,21 @@
+# Root
+.DS_Store
+*.log
+.env
+.env.local
+.idea/
+.vscode/
+
+# Backend
+backend/.venv/
+backend/route53.db
+backend/.env
+backend/__pycache__/
+backend/**/__pycache__/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env*
+!frontend/.env.example
+frontend/.vercel/
