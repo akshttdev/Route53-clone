@@ -12,47 +12,514 @@
   box-sizing: border-box;
 }
 
+/* Chrome color on the canvas so overscroll/bounce never flashes white */
 html,
 body {
   height: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
   margin: 0;
   padding: 0;
+  background-color: #232f3e;
+  overscroll-behavior-y: none;
+}
+
+html {
+  background-color: #232f3e;
 }
 
 body {
   font-family: "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif !important;
+  background-color: #232f3e;
 }
 
-/* Route 53 orange primary actions (Cloudscape) */
+/* Next.js pages-router root (App Router paints html/body directly) */
+#__next {
+  min-height: 100%;
+  min-height: 100dvh;
+  background-color: #232f3e;
+}
+
+body.awsui-dark-mode {
+  background-color: #232f3e;
+}
+
+/* Inline text links (no Cloudscape focus box) */
+.aws-text-link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: #0073bb;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: none;
+  outline: none;
+  border-radius: 0;
+}
+
+.aws-text-link:hover {
+  color: #005a9c;
+  text-decoration: underline;
+}
+
+.aws-text-link:focus,
+.aws-text-link:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border: 0;
+  text-decoration: underline;
+}
+
+/* Soften Cloudscape link focus rings (avoid sharp blue box) */
+.console-shell a[class*="awsui_link"],
+.console-shell [class*="awsui_link"] {
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.console-shell a[class*="awsui_link"]:focus,
+.console-shell a[class*="awsui_link"]:focus-visible,
+.console-shell [class*="awsui_link"]:focus,
+.console-shell [class*="awsui_link"]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: underline !important;
+}
+
+/* ===== AWS Console look (override Cloudscape visual-refresh tokens) =====
+   Classic Route 53: sharp corners (0), grey outline buttons, orange accents.
+   Tokens live in @layer awsui-base-theme — unlayered !important wins. */
+:root,
+body {
+  /* Sharp controls (no VR pills / soft cards) */
+  --border-radius-button-7bgkcs: 0 !important;
+  --border-radius-input-7q0str: 0 !important;
+  --border-radius-item-iwaia5: 0 !important;
+  --border-radius-dropdown-fgc2a1: 0 !important;
+  --border-radius-token-ycnemh: 0 !important;
+  --border-radius-token-inline-tio0a0: 0 !important;
+  --border-radius-tabs-focus-ring-o4qku1: 0 !important;
+  --border-radius-tiles-wm1vgw: 0 !important;
+  --border-radius-popover-6fqb5w: 0 !important;
+  --border-radius-control-default-focus-ring-1uabki: 0 !important;
+  --border-radius-calendar-day-focus-ring-xvvbuc: 0 !important;
+  --border-radius-container-nsfwmm: 0 !important;
+  --border-radius-alert-u5i5yq: 0 !important;
+  --border-radius-badge-c5xwqt: 0 !important;
+  --border-radius-flashbar-8c2qvz: 0 !important;
+  --border-radius-chat-bubble-q8n3kx: 0 !important;
+  --border-width-button-jm0qg7: 1px !important;
+
+  /* Selected / active → AWS orange */
+  --color-text-accent-n1kmht: #ff9900 !important;
+  --color-item-selected-72rnwy: #ff9900 !important;
+  --color-border-item-selected-wl5ttm: #ff9900 !important;
+  --color-border-tabs-underline-gudemr: #ff9900 !important;
+  --color-border-dropdown-item-selected-dl2ezh: #ff9900 !important;
+  --color-background-item-selected-9gppru: #fff8f0 !important;
+  --color-background-dropdown-item-selected-f3v6te: #fff8f0 !important;
+  --color-background-layout-toggle-selected-active-zcl8w3: #ff9900 !important;
+  --color-background-layout-toggle-selected-default-izfana: #ff9900 !important;
+  --color-background-layout-toggle-selected-hover-7953u1: #ec7211 !important;
+  --color-border-toggle-button-normal-pressed-tq8o41: #ff9900 !important;
+  --color-text-toggle-button-normal-pressed-wnx2zl: #ff9900 !important;
+  --color-background-toggle-button-normal-pressed-4khex7: #fff8f0 !important;
+
+  /* Outline / normal buttons: grey border + dark text (not blue) */
+  --color-border-button-normal-default-glqfp1: #687078 !important;
+  --color-border-button-normal-hover-6a2tdq: #545b64 !important;
+  --color-border-button-normal-active-ru7yhb: #545b64 !important;
+  --color-border-toggle-button-normal-default-13wcrj: #687078 !important;
+  --color-border-toggle-button-normal-hover-0gzb6n: #545b64 !important;
+  --color-text-button-normal-default-nzalii: #16191f !important;
+  --color-text-button-normal-hover-gusgyv: #16191f !important;
+  --color-text-button-normal-active-vihsxh: #16191f !important;
+  --color-background-button-normal-default-7f99mv: #ffffff !important;
+  --color-background-button-normal-hover-53op9s: #f2f3f3 !important;
+  --color-background-button-normal-active-5imwxd: #eaeded !important;
+
+  /* Primary → solid orange (decoupled from normal-border token) */
+  --color-background-button-primary-default-vdt0fu: #ff9900 !important;
+  --color-background-button-primary-hover-mo85i6: #ec7211 !important;
+  --color-background-button-primary-active-5cqoqt: #eb5f07 !important;
+  --color-border-button-primary-default-45p8u2: #e47911 !important;
+  --color-border-button-primary-hover-rktx0f: #eb5f07 !important;
+  --color-border-button-primary-active-6jnxoc: #eb5f07 !important;
+  --color-text-button-primary-default-mwl31m: #16191f !important;
+  --color-text-button-primary-hover-pw12ep: #16191f !important;
+  --color-text-button-primary-active-refmba: #16191f !important;
+
+  /* Link buttons stay blue (do not inherit dark normal-button text) */
+  --color-text-button-link-default-vvunrs: #0073bb !important;
+  --color-text-button-link-hover-kvrc36: #005a9c !important;
+  --color-text-button-link-active-dqdjg3: #004d86 !important;
+  --color-text-link-button-normal-default-srprth: #0073bb !important;
+  --color-text-link-button-normal-hover-jrnyw3: #005a9c !important;
+  --color-text-link-button-normal-active-js9ryu: #004d86 !important;
+
+  /* Cream console chrome (light) — content card sits on top */
+  --color-background-layout-main-5ilwcb: #f2f3f3 !important;
+}
+
+body.awsui-dark-mode {
+  --color-text-accent-n1kmht: #ff9900 !important;
+  --color-item-selected-72rnwy: #ff9900 !important;
+  --color-border-item-selected-wl5ttm: #ff9900 !important;
+  --color-border-tabs-underline-gudemr: #ff9900 !important;
+  --color-border-dropdown-item-selected-dl2ezh: #ff9900 !important;
+  --color-background-item-selected-9gppru: rgba(255, 153, 0, 0.16) !important;
+  --color-background-dropdown-item-selected-f3v6te: rgba(255, 153, 0, 0.16) !important;
+  --color-background-layout-toggle-selected-active-zcl8w3: #ff9900 !important;
+  --color-background-layout-toggle-selected-default-izfana: #ff9900 !important;
+  --color-background-layout-toggle-selected-hover-7953u1: #ec7211 !important;
+  --color-border-toggle-button-normal-pressed-tq8o41: #ff9900 !important;
+  --color-text-toggle-button-normal-pressed-wnx2zl: #ff9900 !important;
+  --color-background-toggle-button-normal-pressed-4khex7: rgba(255, 153, 0, 0.16) !important;
+
+  --color-border-button-normal-default-glqfp1: #879596 !important;
+  --color-border-button-normal-hover-6a2tdq: #aab7b8 !important;
+  --color-border-button-normal-active-ru7yhb: #aab7b8 !important;
+  --color-border-toggle-button-normal-default-13wcrj: #879596 !important;
+  --color-border-toggle-button-normal-hover-0gzb6n: #aab7b8 !important;
+  --color-text-button-normal-default-nzalii: #d5dbdb !important;
+  --color-text-button-normal-hover-gusgyv: #ffffff !important;
+  --color-text-button-normal-active-vihsxh: #ffffff !important;
+  --color-background-button-normal-default-7f99mv: transparent !important;
+  --color-background-button-normal-hover-53op9s: rgba(255, 255, 255, 0.08) !important;
+  --color-background-button-normal-active-5imwxd: rgba(255, 255, 255, 0.12) !important;
+
+  --color-background-button-primary-default-vdt0fu: #ff9900 !important;
+  --color-background-button-primary-hover-mo85i6: #ec7211 !important;
+  --color-background-button-primary-active-5cqoqt: #eb5f07 !important;
+  --color-border-button-primary-default-45p8u2: #ff9900 !important;
+  --color-border-button-primary-hover-rktx0f: #ec7211 !important;
+  --color-border-button-primary-active-6jnxoc: #eb5f07 !important;
+  --color-text-button-primary-default-mwl31m: #16191f !important;
+  --color-text-button-primary-hover-pw12ep: #16191f !important;
+  --color-text-button-primary-active-refmba: #16191f !important;
+
+  --color-text-button-link-default-vvunrs: #44b9d6 !important;
+  --color-text-button-link-hover-kvrc36: #67c8e0 !important;
+  --color-text-button-link-active-dqdjg3: #44b9d6 !important;
+  --color-text-link-button-normal-default-srprth: #44b9d6 !important;
+  --color-text-link-button-normal-hover-jrnyw3: #67c8e0 !important;
+  --color-text-link-button-normal-active-js9ryu: #44b9d6 !important;
+
+  --color-background-layout-main-5ilwcb: #0f141a !important;
+}
+
+/* Sharp corners — target elements (not every ::before/::after). Pseudo elements
+   still get radius 0 via the same class match when they inherit from awsui_*. */
+.console-shell *,
+[class*="awsui_"] {
+  border-radius: 0 !important;
+  border-start-start-radius: 0 !important;
+  border-start-end-radius: 0 !important;
+  border-end-start-radius: 0 !important;
+  border-end-end-radius: 0 !important;
+}
+
+/* Container decorative chrome uses ::before/::after — keep those square too */
+.console-shell [class*="awsui_"]::before,
+.console-shell [class*="awsui_"]::after,
+[class*="awsui_"]::before,
+[class*="awsui_"]::after {
+  border-radius: 0 !important;
+  border-start-start-radius: 0 !important;
+  border-start-end-radius: 0 !important;
+  border-end-start-radius: 0 !important;
+  border-end-end-radius: 0 !important;
+}
+
+/* Keep only true circles (spinners / avatars) — must follow nuclear 0 rules */
+.console-shell .animate-spin,
+.console-shell .rounded-full,
+.console-shell [class*="awsui_spinner"],
+.console-shell [class*="awsui_status-indicator"] [class*="awsui_icon"],
+[class*="awsui_spinner"],
+.animate-spin,
+.rounded-full,
+.aws-signin-info {
+  border-radius: 50% !important;
+}
+
+/* Portals / non-console surfaces: kill Tailwind rounded utilities */
+[class*="rounded-sm"],
+[class*="rounded-md"],
+[class*="rounded-lg"],
+[class*="rounded-xl"],
+[class*="rounded-2xl"],
+[class*="rounded-3xl"],
+[class*="rounded-4xl"],
+[class*="rounded-\[2px\]"],
+.rounded {
+  border-radius: 0 !important;
+  border-start-start-radius: 0 !important;
+  border-start-end-radius: 0 !important;
+  border-end-start-radius: 0 !important;
+  border-end-end-radius: 0 !important;
+}
+
+/* Re-assert circles after portal kill (specificity/order) */
+.animate-spin,
+.rounded-full,
+.aws-signin-info,
+[class*="awsui_spinner"] {
+  border-radius: 50% !important;
+}
+
+/* Safety-net class overrides (hashed class names change across builds) */
+[class*="awsui_button"] {
+  border-start-start-radius: 0 !important;
+  border-start-end-radius: 0 !important;
+  border-end-start-radius: 0 !important;
+  border-end-end-radius: 0 !important;
+  border-radius: 0 !important;
+  border-block-width: 1px !important;
+  border-inline-width: 1px !important;
+}
+
 [class*="awsui_button"][class*="awsui_variant-primary"] {
   background-color: #ff9900 !important;
-  border-color: #ff9900 !important;
+  border-color: #e47911 !important;
   color: #16191f !important;
 }
 
 [class*="awsui_button"][class*="awsui_variant-primary"]:hover {
   background-color: #ec7211 !important;
-  border-color: #ec7211 !important;
+  border-color: #eb5f07 !important;
   color: #16191f !important;
 }
 
-#h {
+body:not(.awsui-dark-mode) [class*="awsui_button"][class*="awsui_variant-normal"]:not([class*="awsui_disabled"]) {
+  border-color: #687078 !important;
+  color: #16191f !important;
+  background-color: #ffffff !important;
+}
+
+body:not(.awsui-dark-mode) [class*="awsui_button"][class*="awsui_variant-normal"]:not([class*="awsui_disabled"]):hover {
+  border-color: #545b64 !important;
+  background-color: #f2f3f3 !important;
+  color: #16191f !important;
+}
+
+body.awsui-dark-mode [class*="awsui_button"][class*="awsui_variant-normal"]:not([class*="awsui_disabled"]) {
+  border-color: #879596 !important;
+  color: #d5dbdb !important;
+}
+
+body.awsui-dark-mode [class*="awsui_button"][class*="awsui_variant-normal"]:not([class*="awsui_disabled"]):hover {
+  border-color: #aab7b8 !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+/* Inputs, selects, textareas, tokens, containers, tables, modals — sharp */
+[class*="awsui_input"],
+[class*="awsui_textarea"],
+[class*="awsui_trigger"],
+[class*="awsui_button-trigger"],
+[class*="awsui_token"],
+[class*="awsui_option"],
+[class*="awsui_container"],
+[class*="awsui_table"],
+[class*="awsui_modal"],
+[class*="awsui_dialog"],
+[class*="awsui_dropdown"],
+[class*="awsui_popover"],
+[class*="awsui_alert"],
+[class*="awsui_flashbar"],
+[class*="awsui_badge"],
+[class*="awsui_tiles"],
+[class*="awsui_expandable"],
+[class*="awsui_split-panel"],
+[class*="awsui_tabs"],
+[class*="awsui_multiselect"],
+[class*="awsui_select"],
+[class*="awsui_tag-editor"],
+[class*="awsui_code-editor"],
+[class*="awsui_file-upload"],
+[class*="awsui_calendar"],
+[class*="awsui_date"],
+[class*="awsui_pagination"],
+[class*="awsui_collection-preferences"],
+[class*="awsui_text-filter"],
+[class*="awsui_property-filter"] {
+  border-radius: 0 !important;
+  border-start-start-radius: 0 !important;
+  border-start-end-radius: 0 !important;
+  border-end-start-radius: 0 !important;
+  border-end-end-radius: 0 !important;
+}
+
+/* Active tab label emphasis (underline already uses accent token) */
+[class*="awsui_tabs-tab-active"] {
+  color: #ff9900 !important;
+}
+
+/* TTL quick-select chips (custom selected state) */
+body:not(.awsui-dark-mode)
+  [class*="awsui_button"][class*="awsui_variant-normal"].aws-ttl-chip-selected:not([class*="awsui_disabled"]),
+body:not(.awsui-dark-mode)
+  .aws-ttl-chip-selected[class*="awsui_button"][class*="awsui_variant-normal"]:not([class*="awsui_disabled"]) {
+  border-color: #ff9900 !important;
+  color: #ff9900 !important;
+  background-color: rgba(255, 153, 0, 0.1) !important;
+}
+
+body.awsui-dark-mode
+  [class*="awsui_button"][class*="awsui_variant-normal"].aws-ttl-chip-selected:not([class*="awsui_disabled"]),
+body.awsui-dark-mode
+  .aws-ttl-chip-selected[class*="awsui_button"][class*="awsui_variant-normal"]:not([class*="awsui_disabled"]) {
+  border-color: #ff9900 !important;
+  color: #ff9900 !important;
+  background-color: rgba(255, 153, 0, 0.16) !important;
+}
+
+/* Side nav "Route 53" close control: × instead of angle-left.
+   Scoped to navigation only — must not match table/header cells. */
+.console-shell [class*="awsui_navigation"] [class*="awsui_navigation-close"] svg,
+[class*="awsui_navigation"] [class*="awsui_navigation-close"] svg {
+  display: none !important;
+}
+
+.console-shell [class*="awsui_navigation"] [class*="awsui_navigation-close"]::after,
+[class*="awsui_navigation"] [class*="awsui_navigation-close"]::after {
+  content: "×";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  width: 1em;
+  height: 1em;
+}
+
+/* Fixed AWS console header above scrolling content */
+#h,
+.aws-console-header {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 2000;
+  flex-shrink: 0;
 }
 
 .console-shell {
   display: flex;
   flex-direction: column;
+  min-height: 100%;
+  min-height: 100dvh;
   height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
   overflow: hidden;
-  background: var(--color-background-layout-main, #0f141a);
+  overscroll-behavior: none;
+  /* Mid content stays cream; header/footer paint #232f3e on the edges */
+  background: var(--color-background-layout-main-5ilwcb, #f2f3f3);
 }
 
-.console-shell > div:last-child {
+.console-shell__body {
   flex: 1;
   min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.console-shell__body > * {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Cream chrome + elevated white content card; gap before split panel */
+body:not(.awsui-dark-mode) [class*="awsui_layout"] {
+  background-color: #f2f3f3 !important;
+}
+
+body:not(.awsui-dark-mode) [class*="awsui_scrolling-background"],
+body:not(.awsui-dark-mode) [class*="awsui_breadcrumbs"],
+body:not(.awsui-dark-mode) [class*="awsui_mobile-toolbar"],
+body:not(.awsui-dark-mode) [class*="awsui_navigation"],
+body:not(.awsui-dark-mode) [class*="awsui_drawers"] {
+  background-color: #f2f3f3 !important;
+}
+
+/* Force content gaps so middle card and right split panel are separated */
+.console-shell [class*="awsui_layout"] {
+  --awsui-content-gap-left-esndbs: 20px !important;
+  --awsui-content-gap-right-esndbs: 20px !important;
+  gap: 0 !important;
+}
+
+/* AppLayout main content cell only — white card on cream.
+   Do NOT match every [class*="awsui_content_"] (buttons, Container body,
+   ExpandableSection, etc.). Padding on Table's Container content shifts the
+   primary thead under stickyHeader's secondary header → double labels. */
+body:not(.awsui-dark-mode) .console-shell [class*="awsui_layout"] > [class*="awsui_container"],
+body:not(.awsui-dark-mode) .console-shell [class*="awsui_layout"] > [class*="awsui_content_"] {
+  background-color: #ffffff !important;
+  border: 1px solid #d5dbdb !important;
+  border-radius: 0 !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  padding-inline: 20px !important;
+  padding-block-start: 16px !important;
+  margin-block-end: 16px;
+  margin-inline-end: 0;
+  min-width: 0;
+}
+
+body.awsui-dark-mode .console-shell [class*="awsui_layout"] > [class*="awsui_container"],
+body.awsui-dark-mode .console-shell [class*="awsui_layout"] > [class*="awsui_content_"] {
+  background-color: #161d26 !important;
+  border: 1px solid #3f4b5b !important;
+  border-radius: 0 !important;
+  padding-inline: 20px !important;
+  padding-block-start: 16px !important;
+  margin-block-end: 16px;
+  min-width: 0;
+}
+
+/* Nested Cloudscape containers inside AppLayout main — sharp corners only */
+body:not(.awsui-dark-mode)
+  .console-shell
+  [class*="awsui_layout"]
+  > [class*="awsui_content_"]
+  [class*="awsui_container"],
+body:not(.awsui-dark-mode)
+  .console-shell
+  [class*="awsui_layout"]
+  > [class*="awsui_container"]
+  [class*="awsui_container"] {
+  border-radius: 0 !important;
+}
+
+/* Split panel sits in chrome — visually separate from middle card (gap) */
+.console-shell [class*="awsui_split-panel-side"] {
+  margin-inline-start: 16px !important;
+  /* Narrower than Cloudscape default side split (~440px+) */
+  max-width: min(340px, 28vw) !important;
+}
+
+body:not(.awsui-dark-mode) .console-shell [class*="awsui_split-panel-side"] {
+  background-color: #ffffff !important;
+  border: 1px solid #d5dbdb !important;
+  border-radius: 0 !important;
+  margin-block-end: 16px;
+  margin-inline-end: 16px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+body.awsui-dark-mode .console-shell [class*="awsui_split-panel-side"] {
+  background-color: #161d26 !important;
+  border: 1px solid #3f4b5b !important;
+  border-radius: 0 !important;
+  margin-block-end: 16px;
+  margin-inline-end: 16px;
 }
 
 /* AWS Management Console top header */
@@ -105,7 +572,7 @@ body {
   height: 36px;
   padding: 0 10px;
   border: 0;
-  border-radius: 2px;
+  border-radius: 0;
   background: transparent;
   color: #d5dbdb;
   cursor: pointer;
@@ -130,7 +597,7 @@ body {
   width: 36px;
   height: 36px;
   border: 0;
-  border-radius: 2px;
+  border-radius: 0;
   background: transparent;
   color: #d5dbdb;
   cursor: pointer;
@@ -147,7 +614,7 @@ body {
   margin-left: 8px;
   background: #161d26;
   border: 1px solid #545b64;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 .aws-search-wrap {
@@ -174,7 +641,7 @@ body {
   overflow: auto;
   background: #232f3e;
   border: 1px solid #545b64;
-  border-radius: 2px;
+  border-radius: 0;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
@@ -252,7 +719,7 @@ body {
   margin-right: 8px;
   padding: 1px 4px;
   border: 1px solid #545b64;
-  border-radius: 2px;
+  border-radius: 0;
   color: #879596;
   font-size: 11px;
   font-family: inherit;
@@ -272,7 +739,7 @@ body {
   padding: 4px 0;
   background: #232f3e;
   border: 1px solid #545b64;
-  border-radius: 2px;
+  border-radius: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
@@ -495,7 +962,7 @@ body {
 .aws-signin-card {
   background: var(--signin-card-bg);
   border: 1px solid var(--signin-border);
-  border-radius: 4px;
+  border-radius: 0;
   padding: 28px 28px 24px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
@@ -561,7 +1028,7 @@ body {
   height: 34px;
   padding: 4px 8px;
   border: 1px solid var(--signin-input-border);
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--signin-card-bg);
   color: var(--signin-text);
   font: inherit;
@@ -605,7 +1072,7 @@ body {
   border: 1px solid var(--signin-error-border);
   background: var(--signin-error-bg);
   color: var(--signin-error-text);
-  border-radius: 2px;
+  border-radius: 0;
   padding: 10px 12px;
   font-size: 13px;
 }
@@ -613,7 +1080,7 @@ body {
 .aws-signin-primary {
   height: 36px;
   border: 1px solid #e47911;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--signin-primary);
   color: var(--signin-primary-text);
   font: inherit;
@@ -635,7 +1102,7 @@ body {
 .aws-signin-secondary {
   height: 36px;
   border: 1px solid #0073bb;
-  border-radius: 2px;
+  border-radius: 0;
   background: transparent;
   color: #0073bb;
   font: inherit;
@@ -657,7 +1124,7 @@ body {
   font-size: 12px;
   background: rgba(127, 127, 127, 0.12);
   padding: 1px 4px;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 .aws-signin-create {
@@ -677,7 +1144,7 @@ body {
 
 .aws-signin-promo {
   min-height: 340px;
-  border-radius: 4px;
+  border-radius: 0;
   background:
     radial-gradient(ellipse at 70% 40%, rgba(255, 153, 0, 0.25), transparent 55%),
     linear-gradient(160deg, #0d2137 0%, var(--signin-promo-bg) 100%);
@@ -710,7 +1177,7 @@ body {
   display: inline-block;
   padding: 8px 14px;
   border: 1px solid #fff;
-  border-radius: 2px;
+  border-radius: 0;
   color: #fff;
   text-decoration: none;
   font-size: 13px;

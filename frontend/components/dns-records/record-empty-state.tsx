@@ -12,7 +12,7 @@ export function RecordEmptyState({
   onCreate,
 }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-20">
+    <div className="flex flex-col items-center justify-center rounded-none border border-dashed py-20">
       <Database className="mb-4 h-12 w-12 text-muted-foreground" />
 
       <h3 className="text-lg font-semibold">

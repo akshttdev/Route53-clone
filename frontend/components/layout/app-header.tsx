@@ -23,7 +23,7 @@ export function AppHeader() {
             className="
               h-10
               w-72
-              rounded-md
+              rounded-none
               border
               border-[#C6CACE]
               bg-white
@@ -81,7 +81,7 @@ export function AppHeader() {
                 className="fixed inset-0 z-40"
                 onClick={() => setShowUserMenu(false)}
               />
-              <div className="absolute right-0 top-12 z-50 w-56 rounded-lg border border-[#D5DBDB] bg-white shadow-lg">
+              <div className="absolute right-0 top-12 z-50 w-56 rounded-none border border-[#D5DBDB] bg-white shadow-lg">
                 <div className="border-b border-[#D5DBDB] px-4 py-3">
                   <p className="text-sm font-semibold text-[#16191F]">
                     Admin User
@@ -99,7 +99,7 @@ export function AppHeader() {
                       w-full
                       items-center
                       gap-3
-                      rounded-md
+                      rounded-none
                       px-3
                       py-2
                       text-sm
@@ -134,7 +134,7 @@ function HeaderIcon({ children }: HeaderIconProps) {
         w-9
         items-center
         justify-center
-        rounded-md
+        rounded-none
         text-[#5F6B7A]
         transition-colors
         hover:bg-[#F2F3F3]

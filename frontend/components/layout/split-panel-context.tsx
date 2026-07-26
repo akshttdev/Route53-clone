@@ -25,24 +25,47 @@ const defaultState: SplitPanelState = {
   open: false,
   header: "",
   content: null,
-  size: 400,
+  size: 340,
 };
 
 const SplitPanelContext = createContext<SplitPanelContextValue | null>(null);
+
+function sameSplitPanelState(
+  prev: SplitPanelState,
+  next: SplitPanelState
+): boolean {
+  return (
+    prev.open === next.open &&
+    prev.header === next.header &&
+    prev.content === next.content &&
+    prev.size === next.size
+  );
+}
 
 export function SplitPanelProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<SplitPanelState>(defaultState);
 
   const setSplitPanel = useCallback((next: Partial<SplitPanelState> | null) => {
     if (next === null) {
-      setState(defaultState);
+      setState((prev) =>
+        sameSplitPanelState(prev, defaultState) ? prev : defaultState
+      );
       return;
     }
-    setState((prev) => ({ ...prev, ...next, open: next.open ?? true }));
+    setState((prev) => {
+      const merged: SplitPanelState = {
+        ...prev,
+        ...next,
+        open: next.open ?? true,
+      };
+      return sameSplitPanelState(prev, merged) ? prev : merged;
+    });
   }, []);
 
   const closeSplitPanel = useCallback(() => {
-    setState(defaultState);
+    setState((prev) =>
+      sameSplitPanelState(prev, defaultState) ? prev : defaultState
+    );
   }, []);
 
   const value = useMemo(

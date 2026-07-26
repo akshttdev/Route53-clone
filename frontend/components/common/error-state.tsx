@@ -18,7 +18,7 @@ export function ErrorState({
   onRetry,
 }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-[#D5DBDB] bg-white py-20">
+    <div className="flex flex-col items-center justify-center rounded-none border border-[#D5DBDB] bg-white py-20">
       <AlertTriangle className="mb-5 h-10 w-10 text-[#D13212]" />
 
       <h2 className="text-xl font-semibold text-[#16191F]">

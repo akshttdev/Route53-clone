@@ -23,7 +23,7 @@ export function DeleteRecordDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-none bg-white p-6 shadow-xl">
         <h2 className="text-lg font-semibold text-[#16191F]">
           Delete DNS Record
         </h2>
@@ -32,7 +32,7 @@ export function DeleteRecordDialog({
           Are you sure you want to delete this DNS record?
         </p>
 
-        <div className="mt-3 rounded-md bg-red-50 p-3">
+        <div className="mt-3 rounded-none bg-red-50 p-3">
           <p className="text-sm">
             <span className="font-semibold text-red-900">{record.name}</span>
             <span className="text-red-700"> ({record.type})</span>

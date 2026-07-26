@@ -4,7 +4,7 @@ import Link from "@cloudscape-design/components/link";
 
 export function ConsoleFooter() {
   return (
-    <footer className="aws-console-footer">
+    <footer className="aws-console-footer" id="f">
       <div className="aws-console-footer__left">
         <button type="button" className="aws-console-footer__btn">
           CloudShell

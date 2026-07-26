@@ -45,7 +45,7 @@ export function EditHostedZoneDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-lg rounded-none bg-white p-6 shadow-xl">
         <h2 className="mb-6 text-xl font-semibold text-[#16191F]">
           Edit Hosted Zone
         </h2>

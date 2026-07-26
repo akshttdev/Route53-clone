@@ -20,7 +20,7 @@ export function RecordTypeBadge({
 }: RecordTypeBadgeProps) {
   return (
     <span
-      className={`inline-flex rounded-md px-2 py-1 text-xs font-semibold ${
+      className={`inline-flex rounded-none px-2 py-1 text-xs font-semibold ${
         COLORS[type] ??
         "bg-gray-100 text-gray-700"
       }`}

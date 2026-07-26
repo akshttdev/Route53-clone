@@ -296,12 +296,22 @@ export default function QuickCreateRecordPage() {
                         />
                         <SpaceBetween direction="horizontal" size="xs">
                           <Button
+                            className={
+                              draft.ttl === "60"
+                                ? "aws-ttl-chip-selected"
+                                : undefined
+                            }
                             onClick={() => updateDraft(draft.id, { ttl: "60" })}
                             disabled={draft.alias}
                           >
                             1m
                           </Button>
                           <Button
+                            className={
+                              draft.ttl === "3600"
+                                ? "aws-ttl-chip-selected"
+                                : undefined
+                            }
                             onClick={() =>
                               updateDraft(draft.id, { ttl: "3600" })
                             }
@@ -310,6 +320,11 @@ export default function QuickCreateRecordPage() {
                             1h
                           </Button>
                           <Button
+                            className={
+                              draft.ttl === "86400"
+                                ? "aws-ttl-chip-selected"
+                                : undefined
+                            }
                             onClick={() =>
                               updateDraft(draft.id, { ttl: "86400" })
                             }

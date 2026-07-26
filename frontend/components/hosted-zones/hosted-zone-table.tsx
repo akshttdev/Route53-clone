@@ -40,14 +40,14 @@ export function HostedZoneTable({
 
   if (!zones.length) {
     return (
-      <div className="rounded-lg border bg-white p-12 text-center">
+      <div className="rounded-none border bg-white p-12 text-center">
         <p className="text-[#5F6B7A]">No Hosted Zones Found</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-xl border border-[#D5DBDB] bg-white">
+    <div className="rounded-none border border-[#D5DBDB] bg-white">
       <Table>
         <TableHeader>
           <TableRow>
@@ -112,7 +112,7 @@ export function HostedZoneTable({
                         className="fixed inset-0 z-40"
                         onClick={() => setOpenMenu(null)}
                       />
-                      <div className="absolute right-0 top-10 z-50 w-40 rounded-lg border border-[#D5DBDB] bg-white shadow-lg">
+                      <div className="absolute right-0 top-10 z-50 w-40 rounded-none border border-[#D5DBDB] bg-white shadow-lg">
                         <button
                           onClick={() => {
                             setOpenMenu(null)

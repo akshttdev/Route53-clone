@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 import Box from "@cloudscape-design/components/box";
 import Button from "@cloudscape-design/components/button";
-import Link from "@cloudscape-design/components/link";
 import Modal from "@cloudscape-design/components/modal";
 import RadioGroup from "@cloudscape-design/components/radio-group";
 import SpaceBetween from "@cloudscape-design/components/space-between";
@@ -53,7 +52,11 @@ export default function SearchModeBanner({
   const copy = (
     <>
       {modeLabel} mode is the current search behavior {modeBlurb}. To change
-      modes <Link onFollow={openSettings}>go to settings</Link>.
+      modes{" "}
+      <button type="button" className="aws-text-link" onClick={openSettings}>
+        go to settings
+      </button>
+      .
     </>
   );
 

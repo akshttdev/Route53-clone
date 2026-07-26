@@ -21,14 +21,14 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   if (!data.length) {
     return (
-      <div className="rounded-md border border-[#D5DBDB] bg-white">
+      <div className="rounded-none border border-[#D5DBDB] bg-white">
         {emptyState}
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-md border border-[#D5DBDB] bg-white">
+    <div className="overflow-hidden rounded-none border border-[#D5DBDB] bg-white">
       <table className="min-w-full border-collapse">
         <thead className="bg-[#FAFAFA]">
           <tr>

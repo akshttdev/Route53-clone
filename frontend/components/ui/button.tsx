@@ -23,13 +23,13 @@ export function Button({
       disabled={disabled || loading}
       className={twMerge(
         clsx(
-          "inline-flex items-center justify-center rounded-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#0972D3]/30 disabled:pointer-events-none disabled:opacity-50",
+          "inline-flex items-center justify-center rounded-none font-medium transition-all focus:outline-none focus:ring-2 focus:ring-[#FF9900]/30 disabled:pointer-events-none disabled:opacity-50",
 
           {
-            "bg-[#0972D3] text-white hover:bg-[#075EA8]":
+            "border border-[#e47911] bg-[#FF9900] text-[#16191F] hover:bg-[#EC7211] hover:border-[#eb5f07]":
               variant === "primary",
 
-            "border border-[#C6CACE] bg-white text-[#16191F] hover:bg-[#F8F8F8]":
+            "border border-[#687078] bg-white text-[#16191F] hover:bg-[#F2F3F3] hover:border-[#545b64]":
               variant === "secondary",
 
             "bg-red-600 text-white hover:bg-red-700":

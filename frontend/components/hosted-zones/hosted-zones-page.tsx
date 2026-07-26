@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useCollection } from "@cloudscape-design/collection-hooks";
@@ -76,7 +76,7 @@ export default function HostedZonesPage() {
   const deleteMutation = useDeleteHostedZone();
   const updateMutation = useUpdateHostedZone();
 
-  const items = data?.items ?? [];
+  const items = useMemo(() => data?.items ?? [], [data?.items]);
   const totalPages = Math.max(1, data ? Math.ceil(data.total / data.page_size) : 1);
 
   const { items: filteredItems, collectionProps } = useCollection(items, {
@@ -119,7 +119,7 @@ export default function HostedZonesPage() {
     const selected = selectedZones[0];
     if (!selected) {
       setSplitPanel({
-        open: true,
+        open: false,
         header: "0 hosted zone selected",
         content: (
           <Box color="text-body-secondary" padding="m">
@@ -278,9 +278,18 @@ export default function HostedZonesPage() {
         loadingText="Loading hosted zones"
         selectionType="single"
         selectedItems={selectedZones}
-        onSelectionChange={({ detail }) =>
-          setSelectedZones([...detail.selectedItems])
-        }
+        onSelectionChange={({ detail }) => {
+          const next = [...detail.selectedItems];
+          setSelectedZones((prev) => {
+            if (
+              prev.length === next.length &&
+              prev.every((z, i) => z.id === next[i]?.id)
+            ) {
+              return prev;
+            }
+            return next;
+          });
+        }}
         trackBy="id"
         resizableColumns
         variant="full-page"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCollection } from "@cloudscape-design/collection-hooks";
@@ -27,7 +27,6 @@ import Alert from "@cloudscape-design/components/alert";
 import ExpandableSection from "@cloudscape-design/components/expandable-section";
 import StatusIndicator from "@cloudscape-design/components/status-indicator";
 import Toggle from "@cloudscape-design/components/toggle";
-import Drawer from "@cloudscape-design/components/drawer";
 import CollectionPreferences from "@cloudscape-design/components/collection-preferences";
 
 import { useHostedZone } from "@/hooks/use-hosted-zones";
@@ -167,10 +166,70 @@ export default function HostedZoneDetailsPage() {
     [items]
   );
 
+  const resetForm = useCallback(() => {
+    setRecordName("");
+    setRecordType(RECORD_TYPES[0]);
+    setRecordValue("");
+    setRecordTtl("300");
+    setAlias(false);
+  }, []);
+
+  const mutateRecordAsync = updateMutation.mutateAsync;
+  const isUpdatePending = updateMutation.isPending;
+
+  const handleEdit = useCallback(async () => {
+    if (!editingRecord) return;
+    try {
+      await mutateRecordAsync({
+        hostedZoneId: zoneId,
+        recordId: String(editingRecord.id),
+        data: {
+          name: recordName,
+          type: recordType.value as DNSRecord["type"],
+          value: recordValue,
+          ttl: Number(recordTtl) || 300,
+        },
+      });
+      toast.success("Record updated");
+      setEditOpen(false);
+      setEditingRecord(null);
+      resetForm();
+      refetch();
+    } catch {
+      toast.error("Failed to update record");
+    }
+  }, [
+    editingRecord,
+    zoneId,
+    recordName,
+    recordType,
+    recordValue,
+    recordTtl,
+    mutateRecordAsync,
+    resetForm,
+    refetch,
+  ]);
+
+  // Keep latest save handler without putting it in the split-panel effect deps
+  // (avoids loops when mutation/query identities churn).
+  const handleEditRef = useRef(handleEdit);
+  handleEditRef.current = handleEdit;
+
   useEffect(() => {
+    // Leaving selection exits in-panel edit
+    if (editOpen && selectedRecords.length !== 1) {
+      setEditOpen(false);
+      setEditingRecord(null);
+    }
+  }, [selectedRecords, editOpen]);
+
+  // Selection → details panel (stable deps; no form/callback churn)
+  useEffect(() => {
+    if (editOpen) return;
+
     if (selectedRecords.length === 0) {
       setSplitPanel({
-        open: true,
+        open: false,
         header: "0 records selected",
         content: (
           <Box color="text-body-secondary" padding="m">
@@ -182,15 +241,13 @@ export default function HostedZoneDetailsPage() {
     }
 
     const record = selectedRecords[0];
+    const count = selectedRecords.length;
     setSplitPanel({
       open: true,
-      header:
-        selectedRecords.length === 1
-          ? "1 record selected"
-          : `${selectedRecords.length} records selected`,
+      header: count === 1 ? "1 record selected" : `${count} records selected`,
       content: (
         <SpaceBetween size="l">
-          {selectedRecords.length === 1 ? (
+          {count === 1 ? (
             <ColumnLayout columns={1} variant="text-grid">
               <div>
                 <Box variant="awsui-key-label">Record name</Box>
@@ -220,9 +277,9 @@ export default function HostedZoneDetailsPage() {
               </div>
             </ColumnLayout>
           ) : (
-            <Box>{selectedRecords.length} records selected</Box>
+            <Box>{count} records selected</Box>
           )}
-          {selectedRecords.length === 1 && (
+          {count === 1 && (
             <Button
               onClick={() => {
                 setEditingRecord(record);
@@ -240,42 +297,144 @@ export default function HostedZoneDetailsPage() {
         </SpaceBetween>
       ),
     });
-  }, [selectedRecords, setSplitPanel]);
+  }, [selectedRecords, editOpen, setSplitPanel]);
+
+  // In-panel edit form — only while editing; form field changes update content
+  useEffect(() => {
+    if (!editOpen || !editingRecord) return;
+
+    setSplitPanel({
+      open: true,
+      header: "Edit record",
+      content: (
+        <SpaceBetween size="l">
+          <FormField
+            label="Record name"
+            info={<Link href="#">Info</Link>}
+            description="Keep blank to create a record for the root domain."
+          >
+            <Input
+              value={recordName}
+              onChange={({ detail }) => setRecordName(detail.value)}
+            />
+          </FormField>
+          <FormField label="Record type" info={<Link href="#">Info</Link>}>
+            <Select
+              selectedOption={recordType}
+              onChange={({ detail }) =>
+                setRecordType(detail.selectedOption as typeof recordType)
+              }
+              options={RECORD_TYPES}
+            />
+          </FormField>
+          <FormField label="Alias">
+            <Toggle
+              checked={alias}
+              onChange={({ detail }) => setAlias(detail.checked)}
+            >
+              Alias
+            </Toggle>
+          </FormField>
+          <FormField
+            label="Value"
+            info={<Link href="#">Info</Link>}
+            description="Enter multiple values on separate lines."
+          >
+            <Textarea
+              value={recordValue}
+              onChange={({ detail }) => setRecordValue(detail.value)}
+              rows={4}
+            />
+          </FormField>
+          <FormField
+            label="TTL (seconds)"
+            info={<Link href="#">Info</Link>}
+            description="Recommended values: 60 to 172800 (two days)"
+          >
+            <SpaceBetween size="xs">
+              <Input
+                value={recordTtl}
+                onChange={({ detail }) => setRecordTtl(detail.value)}
+                disabled={alias}
+              />
+              <SpaceBetween direction="horizontal" size="xs">
+                <Button
+                  className={
+                    recordTtl === "60" ? "aws-ttl-chip-selected" : undefined
+                  }
+                  onClick={() => setRecordTtl("60")}
+                  disabled={alias}
+                >
+                  1m
+                </Button>
+                <Button
+                  className={
+                    recordTtl === "3600" ? "aws-ttl-chip-selected" : undefined
+                  }
+                  onClick={() => setRecordTtl("3600")}
+                  disabled={alias}
+                >
+                  1h
+                </Button>
+                <Button
+                  className={
+                    recordTtl === "86400" ? "aws-ttl-chip-selected" : undefined
+                  }
+                  onClick={() => setRecordTtl("86400")}
+                  disabled={alias}
+                >
+                  1d
+                </Button>
+              </SpaceBetween>
+            </SpaceBetween>
+          </FormField>
+          <FormField label="Routing policy" info={<Link href="#">Info</Link>}>
+            <Select
+              selectedOption={{ label: "Simple routing", value: "simple" }}
+              options={[{ label: "Simple routing", value: "simple" }]}
+              onChange={() => undefined}
+            />
+          </FormField>
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button
+                variant="link"
+                onClick={() => {
+                  setEditOpen(false);
+                  setEditingRecord(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                loading={isUpdatePending}
+                onClick={() => {
+                  void handleEditRef.current();
+                }}
+              >
+                Save
+              </Button>
+            </SpaceBetween>
+          </Box>
+        </SpaceBetween>
+      ),
+    });
+  }, [
+    editOpen,
+    editingRecord,
+    recordName,
+    recordType,
+    recordValue,
+    recordTtl,
+    alias,
+    isUpdatePending,
+    setSplitPanel,
+  ]);
 
   useEffect(() => {
     return () => closeSplitPanel();
   }, [closeSplitPanel]);
-
-  const resetForm = () => {
-    setRecordName("");
-    setRecordType(RECORD_TYPES[0]);
-    setRecordValue("");
-    setRecordTtl("300");
-    setAlias(false);
-  };
-
-  const handleEdit = async () => {
-    if (!editingRecord) return;
-    try {
-      await updateMutation.mutateAsync({
-        hostedZoneId: zoneId,
-        recordId: String(editingRecord.id),
-        data: {
-          name: recordName,
-          type: recordType.value as DNSRecord["type"],
-          value: recordValue,
-          ttl: Number(recordTtl) || 300,
-        },
-      });
-      toast.success("Record updated");
-      setEditOpen(false);
-      setEditingRecord(null);
-      resetForm();
-      refetch();
-    } catch {
-      toast.error("Failed to update record");
-    }
-  };
 
   const handleBulkDelete = async () => {
     try {
@@ -410,9 +569,18 @@ export default function HostedZoneDetailsPage() {
         loading={recordsLoading}
         selectionType="multi"
         selectedItems={selectedRecords}
-        onSelectionChange={({ detail }) =>
-          setSelectedRecords([...detail.selectedItems])
-        }
+        onSelectionChange={({ detail }) => {
+          const next = [...detail.selectedItems];
+          setSelectedRecords((prev) => {
+            if (
+              prev.length === next.length &&
+              prev.every((r, i) => r.id === next[i]?.id)
+            ) {
+              return prev;
+            }
+            return next;
+          });
+        }}
         trackBy="id"
         resizableColumns
         variant="full-page"
@@ -908,113 +1076,6 @@ export default function HostedZoneDetailsPage() {
           </SpaceBetween>
         </Modal>
       </SpaceBetween>
-
-      <Drawer
-        open={editOpen}
-        position="fixed"
-        placement="end"
-        backdrop
-        closeAction={{ ariaLabel: "Close" }}
-        onClose={() => {
-          setEditOpen(false);
-          setEditingRecord(null);
-        }}
-        header={<h2 style={{ margin: 0 }}>Edit record</h2>}
-        footer={
-          <Box float="right">
-            <SpaceBetween direction="horizontal" size="xs">
-              <Button
-                variant="link"
-                onClick={() => {
-                  setEditOpen(false);
-                  setEditingRecord(null);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                loading={updateMutation.isPending}
-                onClick={handleEdit}
-              >
-                Save
-              </Button>
-            </SpaceBetween>
-          </Box>
-        }
-      >
-        <SpaceBetween size="l">
-          <FormField
-            label="Record name"
-            info={<Link href="#">Info</Link>}
-            description="Keep blank to create a record for the root domain."
-          >
-            <Input
-              value={recordName}
-              onChange={({ detail }) => setRecordName(detail.value)}
-            />
-          </FormField>
-          <FormField label="Record type" info={<Link href="#">Info</Link>}>
-            <Select
-              selectedOption={recordType}
-              onChange={({ detail }) =>
-                setRecordType(detail.selectedOption as typeof recordType)
-              }
-              options={RECORD_TYPES}
-            />
-          </FormField>
-          <FormField label="Alias">
-            <Toggle
-              checked={alias}
-              onChange={({ detail }) => setAlias(detail.checked)}
-            >
-              Alias
-            </Toggle>
-          </FormField>
-          <FormField
-            label="Value"
-            info={<Link href="#">Info</Link>}
-            description="Enter multiple values on separate lines."
-          >
-            <Textarea
-              value={recordValue}
-              onChange={({ detail }) => setRecordValue(detail.value)}
-              rows={4}
-            />
-          </FormField>
-          <FormField
-            label="TTL (seconds)"
-            info={<Link href="#">Info</Link>}
-            description="Recommended values: 60 to 172800 (two days)"
-          >
-            <SpaceBetween size="xs">
-              <Input
-                value={recordTtl}
-                onChange={({ detail }) => setRecordTtl(detail.value)}
-                disabled={alias}
-              />
-              <SpaceBetween direction="horizontal" size="xs">
-                <Button onClick={() => setRecordTtl("60")} disabled={alias}>
-                  1m
-                </Button>
-                <Button onClick={() => setRecordTtl("3600")} disabled={alias}>
-                  1h
-                </Button>
-                <Button onClick={() => setRecordTtl("86400")} disabled={alias}>
-                  1d
-                </Button>
-              </SpaceBetween>
-            </SpaceBetween>
-          </FormField>
-          <FormField label="Routing policy" info={<Link href="#">Info</Link>}>
-            <Select
-              selectedOption={{ label: "Simple routing", value: "simple" }}
-              options={[{ label: "Simple routing", value: "simple" }]}
-              onChange={() => undefined}
-            />
-          </FormField>
-        </SpaceBetween>
-      </Drawer>
     </>
   );
 }

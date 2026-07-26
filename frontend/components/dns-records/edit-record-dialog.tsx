@@ -55,7 +55,7 @@ export function EditRecordDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-lg rounded-none bg-white p-6 shadow-xl">
         <h2 className="mb-6 text-xl font-semibold text-[#16191F]">
           Edit DNS Record
         </h2>
@@ -83,7 +83,7 @@ export function EditRecordDialog({
               Record Type
             </label>
             <select
-              className="h-10 w-full rounded-md border border-[#D5DBDB] bg-white px-3 text-sm text-[#16191F] focus:border-[#0972D3] focus:outline-none focus:ring-2 focus:ring-[#0972D3]/20"
+              className="h-10 w-full rounded-none border border-[#D5DBDB] bg-white px-3 text-sm text-[#16191F] focus:border-[#0972D3] focus:outline-none focus:ring-2 focus:ring-[#0972D3]/20"
               value={form.type}
               onChange={(e) =>
                 setForm({

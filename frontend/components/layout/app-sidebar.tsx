@@ -36,7 +36,7 @@ export function AppSidebar() {
                     <Link
                       href={item.href}
                       className={clsx(
-                        "mx-2 flex items-center gap-3 rounded-md px-4 py-2 text-[14px] font-medium transition-colors",
+                        "mx-2 flex items-center gap-3 rounded-none px-4 py-2 text-[14px] font-medium transition-colors",
                         active
                           ? "bg-[#EAF3FC] text-[#0972D3]"
                           : "text-[#16191F] hover:bg-[#F2F3F3]"

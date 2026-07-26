@@ -38,7 +38,7 @@ export function DNSRecordToolbar({
           <select
             value={typeFilter}
             onChange={(e) => onTypeFilterChange(e.target.value)}
-            className="h-10 rounded-md border border-[#D5DBDB] bg-white px-3 text-sm text-[#16191F] focus:border-[#0972D3] focus:outline-none focus:ring-2 focus:ring-[#0972D3]/20"
+            className="h-10 rounded-none border border-[#D5DBDB] bg-white px-3 text-sm text-[#16191F] focus:border-[#0972D3] focus:outline-none focus:ring-2 focus:ring-[#0972D3]/20"
           >
             <option value="">All Types</option>
             <option value="A">A</option>

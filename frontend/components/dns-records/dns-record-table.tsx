@@ -30,7 +30,7 @@ export function DNSRecordTable({
 }: DNSRecordTableProps) {
   if (loading) {
     return (
-      <div className="rounded-lg border p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-none border p-8 text-center text-sm text-muted-foreground">
         Loading DNS Records...
       </div>
     );
@@ -38,7 +38,7 @@ export function DNSRecordTable({
 
   if (!records.length) {
     return (
-      <div className="rounded-lg border p-12 text-center">
+      <div className="rounded-none border p-12 text-center">
         <h3 className="font-semibold">
           No DNS Records
         </h3>
@@ -51,7 +51,7 @@ export function DNSRecordTable({
   }
 
   return (
-    <div className="rounded-xl border bg-white">
+    <div className="rounded-none border bg-white">
       <Table>
         <TableHeader>
           <TableRow>

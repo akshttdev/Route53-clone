@@ -27,7 +27,7 @@ export function RecordFilter({
 }: Props) {
   return (
     <select
-      className="h-10 rounded-lg border px-3"
+      className="h-10 rounded-none border border-[#687078] px-3"
       value={value}
       onChange={(e) =>
         onChange(e.target.value as DNSRecordType | "ALL")

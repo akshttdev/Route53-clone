@@ -57,7 +57,7 @@ export function Sidebar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 rounded-lg px-4 py-3 transition ${
+                className={`flex items-center gap-3 rounded-none px-4 py-3 transition ${
                   active
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted"

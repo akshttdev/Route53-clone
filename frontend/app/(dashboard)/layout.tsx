@@ -78,6 +78,10 @@ function ConsoleAppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [navigationOpen, setNavigationOpen] = useState(true);
+  const [splitPanelPreferences, setSplitPanelPreferences] = useState<{
+    position: "side" | "bottom";
+  }>({ position: "side" });
+  const [splitPanelSize, setSplitPanelSize] = useState(340);
   const { state, setSplitPanel } = useSplitPanel();
 
   const showSplit =
@@ -88,6 +92,8 @@ function ConsoleAppLayout({ children }: { children: React.ReactNode }) {
   return (
     <AppLayout
       headerSelector="#h"
+      footerSelector="#f"
+      disableBodyScroll
       navigation={
         <SideNavigation
           header={{ href: "/hosted-zones", text: "Route 53" }}
@@ -107,6 +113,12 @@ function ConsoleAppLayout({ children }: { children: React.ReactNode }) {
       toolsHide
       contentType="table"
       splitPanelOpen={showSplit ? state.open : false}
+      splitPanelSize={splitPanelSize}
+      onSplitPanelResize={({ detail }) => setSplitPanelSize(detail.size)}
+      splitPanelPreferences={splitPanelPreferences}
+      onSplitPanelPreferencesChange={({ detail }) =>
+        setSplitPanelPreferences(detail)
+      }
       onSplitPanelToggle={({ detail }) =>
         setSplitPanel({ open: detail.open })
       }
@@ -126,22 +138,22 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [userEmail, setUserEmail] = useState("demo@example.com");
 
   useEffect(() => {
     try {
       const savedTheme = localStorage.getItem("theme");
-      const isDark = savedTheme !== "light";
+      const isDark = savedTheme === "dark";
       setDarkMode(isDark);
       applyMode(isDark ? Mode.Dark : Mode.Light);
-      if (!savedTheme) localStorage.setItem("theme", "dark");
+      if (!savedTheme) localStorage.setItem("theme", "light");
 
       const email = localStorage.getItem("user_email");
       if (email) setUserEmail(email);
     } catch {
       try {
-        applyMode(Mode.Dark);
+        applyMode(Mode.Light);
       } catch {
         /* ignore */
       }
@@ -172,7 +184,9 @@ export default function DashboardLayout({
               onSignOut={handleSignOut}
             />
 
-            <ConsoleAppLayout>{children}</ConsoleAppLayout>
+            <div className="console-shell__body">
+              <ConsoleAppLayout>{children}</ConsoleAppLayout>
+            </div>
             <ConsoleFooter />
           </div>
         </ProtectedRoute>
