@@ -26,6 +26,7 @@ setup_logging()
 
 
 def seed_demo_user() -> None:
+    """Seed demo user; never abort app startup on hash/DB failures."""
     db = SessionLocal()
     try:
         repo = UserRepository(db)
@@ -35,6 +36,13 @@ def seed_demo_user() -> None:
                 email=email,
                 hashed_password=hash_password("password123"),
             )
+    except Exception as exc:  # noqa: BLE001 — startup must not die on seed
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "Demo user seed skipped: %s",
+            exc,
+        )
     finally:
         db.close()
 

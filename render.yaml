@@ -2,6 +2,7 @@ services:
   - type: web
     name: route53-clone-api
     runtime: python
+    pythonVersion: "3.12.8"
     rootDir: backend
     plan: free
     buildCommand: pip install -r requirements.txt

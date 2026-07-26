@@ -16,7 +16,9 @@ Set these in the Render dashboard:
 | **Start Command** | `alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
 | **Instance type** | Free |
 
-Python version is pinned via `backend/runtime.txt` (`python-3.12.8`) so Render does **not** pick 3.14. After you push that file, Render will use 3.12.8 automatically. Until then, Root Directory = `backend` still fixes the missing `requirements.txt` error.
+Python version is pinned via `backend/runtime.txt` (`python-3.12.8`) and `backend/.python-version` so Render does **not** pick 3.14. After you push those files, **Manual Deploy** and confirm the build log shows Python **3.12.x**, not 3.14.
+
+If auto-detect still uses 3.14: in the Render dashboard go to **Environment** (or service **Settings**) and set **Python Version** to **`3.12.8`** (or `3.12`). Also ensure **Root Directory** is `backend` so `runtime.txt` is found.
 
 ### Why the build failed
 
