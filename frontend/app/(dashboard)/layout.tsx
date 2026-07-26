@@ -10,6 +10,7 @@ import { KeyboardShortcutsProvider } from "@/components/layout/keyboard-shortcut
 import { ClientOnly } from "@/components/common/client-only";
 import { AwsConsoleHeader } from "@/components/layout/aws-console-header";
 import { ConsoleFooter } from "@/components/layout/console-footer";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 import {
   SplitPanelProvider,
   useSplitPanel,
@@ -169,17 +170,19 @@ export default function DashboardLayout({
   return (
     <KeyboardShortcutsProvider>
       <SplitPanelProvider>
-        <div className="console-shell">
-          <AwsConsoleHeader
-            userEmail={userEmail}
-            darkMode={darkMode}
-            onToggleDarkMode={toggleDarkMode}
-            onSignOut={handleSignOut}
-          />
+        <ProtectedRoute>
+          <div className="console-shell">
+            <AwsConsoleHeader
+              userEmail={userEmail}
+              darkMode={darkMode}
+              onToggleDarkMode={toggleDarkMode}
+              onSignOut={handleSignOut}
+            />
 
-          <ConsoleAppLayout>{children}</ConsoleAppLayout>
-          <ConsoleFooter />
-        </div>
+            <ConsoleAppLayout>{children}</ConsoleAppLayout>
+            <ConsoleFooter />
+          </div>
+        </ProtectedRoute>
       </SplitPanelProvider>
     </KeyboardShortcutsProvider>
   );
