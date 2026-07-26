@@ -2,6 +2,17 @@
 
 A pixel-accurate clone of the AWS Route 53 console built with Cloudscape Design System. Features persistent storage, full DNS record management, and an authentic AWS console experience.
 
+## Live demo
+
+| Service | URL |
+|---------|-----|
+| Frontend (Vercel) | [https://route53-clone-sepia.vercel.app](https://route53-clone-sepia.vercel.app) |
+| Backend (Render) | [https://route53-clone-3h48.onrender.com](https://route53-clone-3h48.onrender.com) |
+| API health | [https://route53-clone-3h48.onrender.com/api/v1/health](https://route53-clone-3h48.onrender.com/api/v1/health) |
+| API docs | [https://route53-clone-3h48.onrender.com/docs](https://route53-clone-3h48.onrender.com/docs) |
+
+**Login:** `demo@example.com` / `password123`
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -227,7 +238,11 @@ List endpoints return:
 
 You can also create a new account via **Register**.
 
-Hosted demo link: _add your Vercel URL here after deploy_
+| Link | URL |
+|------|-----|
+| Frontend | [https://route53-clone-sepia.vercel.app](https://route53-clone-sepia.vercel.app) |
+| Backend | [https://route53-clone-3h48.onrender.com](https://route53-clone-3h48.onrender.com) |
+| Health | [https://route53-clone-3h48.onrender.com/api/v1/health](https://route53-clone-3h48.onrender.com/api/v1/health) |
 
 ## Deploy (free, stay awake for grading)
 
@@ -300,16 +315,14 @@ This keeps Render warm during the grading window without paying.
 Put this in your submission form / README / email:
 
 ```text
-Demo URL: https://YOUR-FRONTEND.vercel.app
-API URL:  https://YOUR-BACKEND.onrender.com/api/v1
+Demo URL: https://route53-clone-sepia.vercel.app
+API URL:  https://route53-clone-3h48.onrender.com/api/v1
 Login:    demo@example.com
 Password: password123
 GitHub:   https://github.com/akshttdev/Route53-clone
 ```
 
 No separate “deployment key” is needed for graders — they use the public URL + demo login above. Do **not** share Render/Vercel account passwords.
-
-After deploy, replace the placeholder in this README’s Demo section with your real Vercel URL.
 
 ## License
 
